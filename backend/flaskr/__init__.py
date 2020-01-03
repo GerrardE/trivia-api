@@ -52,7 +52,7 @@ def create_app(test_config=None):
         'categories': categories
       }), 200
     except:
-      abort(400)
+      abort(404)
 
   # Handle GET requests for questions and their categories
   @app.route('/api/questions')
@@ -60,17 +60,20 @@ def create_app(test_config=None):
   def get_all_questions():
     try:
       categories = Category.query.order_by(Category.id).all()
-
       questions = Question.query.all()
+
       questions = formatt(questions)
       questions = paginate(request, questions)
 
-      return jsonify({
-        'count': len(questions),
-        'questions': questions,
-        'categories': formatt(categories),
-        'success': True
-      }), 200
+      if len(questions) < 1:
+        abort(404)
+      else: 
+        return jsonify({
+          'count': len(questions),
+          'questions': questions,
+          'categories': formatt(categories),
+          'success': True
+        }), 200
     except:
       abort(400)
 
@@ -95,8 +98,7 @@ def create_app(test_config=None):
         'success': True
       })
     except:
-      abort(422)
-
+      abort(400)
 
   # Handle endpoint to POST a new question
   @app.route('/api/questions', methods=['POST'])
@@ -120,26 +122,22 @@ def create_app(test_config=None):
       db.session.commit()
     except:
       error=True
-      # if an error occurred, rollback the changes from the session
-      db.session.rollback()
       # log error message to the console for easy debbugging
       print(sys.exc_info())
       abort(400)
-    finally:
-      db.session.close()
 
-      categories = Category.query.order_by(Category.id).all()
+    categories = Category.query.order_by(Category.id).all()
 
-      questions = Question.query.all()
-      questions = formatt(questions)
-      questions = paginate(request, questions)
+    questions = Question.query.all()
+    questions = formatt(questions)
+    questions = paginate(request, questions)
 
-      return jsonify({
-        'count': len(questions),
-        'questions': questions,
-        'categories': formatt(categories),
-        'success': True
-      }), 200
+    return jsonify({
+      'count': len(questions),
+      'questions': questions,
+      'categories': formatt(categories),
+      'success': True
+    }), 200
 
   # Handle endpoint to get questions based on a search term.
   @app.route('/api/questions/search', methods=['POST'])
@@ -170,9 +168,8 @@ def create_app(test_config=None):
   @app.route('/api/categories/<int:category_id>/questions')
   @cross_origin()
   def search_questions_by_category(category_id):
+    questions = Question.query.filter_by(category=category_id).all()
     try:
-      questions = Question.query.filter_by(category=category_id).all()
-
       # query the database for like results and send the response
       questions = formatt(questions)
       questions = paginate(request, questions)
@@ -194,7 +191,7 @@ def create_app(test_config=None):
     try:
       previous_questions = request.get_json().get('previous_questions')
       quiz_category = request.get_json().get('quiz_category')
-
+     
       if(quiz_category['id'] == 0):
         questions_by_category = Question.query.all()
       else:
@@ -223,7 +220,7 @@ def create_app(test_config=None):
         'success': True,
         'question': question
       }), 200
-    except Exception as e:
+    except:
       abort(422)
 
   # Error handlers for all expected errors including 404 and 422. 

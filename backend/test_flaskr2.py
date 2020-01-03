@@ -2,7 +2,6 @@ import os
 import unittest
 import json
 from flask_sqlalchemy import SQLAlchemy
-
 from flaskr import create_app
 from models import setup_db, Question, Category
 
@@ -14,7 +13,7 @@ class TriviaTestCase(unittest.TestCase):
         """Define test variables and initialize app."""
         self.app = create_app()
         self.client = self.app.test_client
-        self.database_name = "trivia"
+        self.database_name = "trivia_test"
         self.database_path = "postgres://{}/{}".format('gerrard:testpass@localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
 
@@ -27,10 +26,10 @@ class TriviaTestCase(unittest.TestCase):
         }
 
         self.data = {
-            'previous_questions': [],
+            'previous_questions': '',
             'quiz_category': {
                 'type': {
-                    'id': 2, 
+                    'id': 1, 
                     'type': 'Art'
                     }, 
                 'id': 1
@@ -48,62 +47,66 @@ class TriviaTestCase(unittest.TestCase):
         """Executed after reach test"""
         pass
 
-    # Handle GET requests for all available categories.
-    def test_get_all_categories(self):
+    # Handle failed GET requests for all available categories.
+    def test_get_all_categories_fail(self):
         res = self.client().get('/api/categories')
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(data['success'], True)
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'resource not found')
         
-    # Handle GET requests for all available questions.
-    def test_get_all_questions(self):
+    # Handle failed GET requests for all available questions.
+    def test_get_all_questions_fail(self):
         res = self.client().get('/api/questions')
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(data['success'], True)
-        
-    # Handle DELETE request for single question.
-    def test_delete_a_question(self):
-        res = self.client().delete('/api/questions/11')
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'Request failed')
+
+    # Handle failed DELETE requests for a question.
+    def test_delete_a_question_fail(self):
+        res = self.client().delete('/api/questions/{}'.format(''))
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(data['success'], True)
-        
-    # Handle POST request for single question.
-    def test_post_a_question(self):
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'resource not found')
+
+   
+    # Handle failed POST request for single question.
+    def test_post_a_question_fail(self):
         res = self.client().post('/api/questions', json=self.new_question)
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(data['success'], True)
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(data['success'], False)
+
         
-    # Handle POST request for searching questions.
-    def test_search_a_question(self):
-        res = self.client().post('/api/questions/search', json={'searchTerm': 'who'})
+    # Handle failed POST request for searching questions.
+    def test_search_a_question_fail(self):
+        res = self.client().post('/api/questions/search', json={'searchTerm': 1})
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(data['success'], True)
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(data['success'], False)
 
-    # Handle GET requests for all available questionss by category id.
-    def test_get_all_categories_by_id(self):
-        res = self.client().get('/api/categories/1/questions')
+    # Handle failed GET requests for all available categories by id.
+    def test_get_all_categories_by_id_fail(self):
+        res = self.client().get('/api/categories/1')
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(data['success'], True)
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
 
     # Handle the quiz section test.
-    def test_quizz(self):
+    def test_quizz_fail(self):
         res = self.client().post('/api/quizzes', json=self.data)
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(data['success'], True)
-
+        self.assertEqual(res.status_code, 422)
+        self.assertEqual(data['success'], False)
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
