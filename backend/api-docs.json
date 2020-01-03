@@ -1,0 +1,226 @@
+{
+	"info": {
+		"_postman_id": "bd7effdb-695a-4135-9e44-1c38eabb299e",
+		"name": "Trivia API",
+		"description": "Udacity is invested in creating bonding experiences for its employees and students. A bunch of team members got the idea to hold trivia on a regular basis and created a  webpage to manage the trivia app and play the game. \r\n\r\nFeatures available at this point are the ability to:\r\n\r\n1) Display questions - both all questions and by category. Questions should show the question, category and difficulty rating by default and can show/hide the answer. \r\n2) Delete questions.\r\n3) Add questions and require that they include question and answer text.\r\n4) Search for questions based on a text query string.\r\n5) Play the quiz game, randomizing either all questions or within a specific category. ",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get All Categories",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/categories",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"categories"
+					]
+				},
+				"description": "Retrieve all available question category"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Questions By Category",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/categories/2/questions",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"categories",
+						"2",
+						"questions"
+					]
+				},
+				"description": "Retrieve all available questions by category id"
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Questions",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/questions",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"questions"
+					]
+				},
+				"description": "Retrieve all available questions in the database"
+			},
+			"response": []
+		},
+		{
+			"name": "Post A Question",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"answer\": \"Jamie\",\n    \"category\": 2,\n    \"difficulty\": 3,\n    \"id\": 18,\n    \"question\": \"What is Carragher's last name?\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/questions",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"questions"
+					]
+				},
+				"description": "Post a question to the database"
+			},
+			"response": []
+		},
+		{
+			"name": "Play The Quiz",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"previous_questions\": [],\n    \"quiz_category\": {\n\t    \"type\": {\n\t    \"id\": 2, \n\t    \"type\": \"Art\"\n\t    }, \n    \"id\": 1\n            }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/quizzes",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"quizzes"
+					]
+				},
+				"description": "Select a category and play the game with respect to previous_questions already played. You will have to answer random questions from that category as long as you have not answered it before"
+			},
+			"response": []
+		},
+		{
+			"name": "Search for a question",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"searchTerm\": \"Who\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/questions/search",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"questions",
+						"search"
+					]
+				},
+				"description": "Search for a question in the database"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a question",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/questions/10",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"questions",
+						"10"
+					]
+				},
+				"description": "Delete any question by id"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "b22c531c-c85e-4244-a5b8-cc5246f30411",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "1106ac25-f90c-411e-a243-b86de374b6fc",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "c68abc1d-cf41-4f16-8a25-5f79a0305fe2",
+			"key": "url",
+			"value": "localhost:5000",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}

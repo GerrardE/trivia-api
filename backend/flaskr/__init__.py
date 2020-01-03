@@ -42,8 +42,10 @@ def create_app(test_config=None):
   @app.route('/api/categories')
   @cross_origin()
   def get_all_categories():
+    categories = Category.query.all()
+    if len(categories) == 0:
+      abort(404)
     try:
-      categories = Category.query.all()
       categories = paginate(request, categories)
       categories = formatt(categories)
       
@@ -52,16 +54,21 @@ def create_app(test_config=None):
         'categories': categories
       }), 200
     except:
-      abort(404)
+      abort(400)
 
   # Handle GET requests for questions and their categories
   @app.route('/api/questions')
   @cross_origin()
   def get_all_questions():
-    try:
-      categories = Category.query.order_by(Category.id).all()
-      questions = Question.query.all()
+    categories = Category.query.order_by(Category.id).all()
+    questions = Question.query.all()
+    
+    if len(questions) == 0:
+      abort(404)
+    elif len(categories) == 0:
+      abort(404)
 
+    try:
       questions = formatt(questions)
       questions = paginate(request, questions)
 
@@ -81,10 +88,11 @@ def create_app(test_config=None):
   @app.route('/api/questions/<int:question_id>', methods=['DELETE'])
   @cross_origin()
   def delete_question(question_id):
+    question=Question.query.filter(Question.id==question_id).one_or_none()
+    if question is None:
+      abort(404)
+
     try:
-      question=Question.query.filter(Question.id==question_id).one_or_none()
-      if question is None:
-        abort(404)
       question.delete()
       categories = Category.query.order_by(Category.id).all()
       questions = Question.query.all()
@@ -107,16 +115,19 @@ def create_app(test_config=None):
     error = False
     # Declare and empty data dictionary to hold all retrieved variables
     data=request.get_json()
+    # set question variable equal to corresponding model class, ready for adding to the session
+
+    question = Question(
+      question=data.get('question'), 
+      answer=data.get('answer'),
+      difficulty=data.get('difficulty'),
+      category=data.get('category')
+      )
+
+    if len(question) == 0:
+      abort(422)
 
     try:
-      # set question variable equal to corresponding model class, ready for adding to the session
-      question = Question(
-        question=data.get('question', None), 
-        answer=data.get('answer', None),
-        difficulty=data.get('difficulty', None),
-        category=data.get('category', None)
-        )
-
       db.session.add(question)
       # commit final changes and flash newly added venue on success
       db.session.commit()
@@ -127,7 +138,6 @@ def create_app(test_config=None):
       abort(400)
 
     categories = Category.query.order_by(Category.id).all()
-
     questions = Question.query.all()
     questions = formatt(questions)
     questions = paginate(request, questions)
