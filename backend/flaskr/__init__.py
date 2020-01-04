@@ -115,18 +115,18 @@ def create_app(test_config=None):
     error = False
     # Declare and empty data dictionary to hold all retrieved variables
     data=request.get_json()
+    
     # set question variable equal to corresponding model class, ready for adding to the session
-
     question = Question(
-      question=data.get('question'), 
-      answer=data.get('answer'),
-      difficulty=data.get('difficulty'),
-      category=data.get('category')
+      question=data.get('question', None), 
+      answer=data.get('answer', None),
+      difficulty=data.get('difficulty', None),
+      category=data.get('category', None)
       )
-
-    if len(question) == 0:
-      abort(422)
-
+    
+    if not question.question:
+      abort(404)
+      
     try:
       db.session.add(question)
       # commit final changes and flash newly added venue on success
@@ -198,10 +198,10 @@ def create_app(test_config=None):
   # POST endpoint to get questions to play the quiz
   @app.route('/api/quizzes', methods=['POST'])
   def random_questions():
+    previous_questions = request.get_json().get('previous_questions')
+    quiz_category = request.get_json().get('quiz_category')
+    
     try:
-      previous_questions = request.get_json().get('previous_questions')
-      quiz_category = request.get_json().get('quiz_category')
-     
       if(quiz_category['id'] == 0):
         questions_by_category = Question.query.all()
       else:
@@ -239,7 +239,7 @@ def create_app(test_config=None):
     return jsonify({
         "success": False, 
         "error": 404,
-        "message": "resource not found"
+        "message": "Resource not found"
         }), 404
 
   @app.errorhandler(422)
