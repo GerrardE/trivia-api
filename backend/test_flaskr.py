@@ -15,7 +15,8 @@ class TriviaTestCase(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client
         self.database_name = "trivia"
-        self.database_path = "postgres://{}/{}".format('gerrard:testpass@localhost:5432', self.database_name)
+        self.database_path = "postgres://{}/{}".format(
+            'gerrard:testpass@localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
 
         self.new_question = {
@@ -30,9 +31,9 @@ class TriviaTestCase(unittest.TestCase):
             'previous_questions': [],
             'quiz_category': {
                 'type': {
-                    'id': 2, 
+                    'id': 2,
                     'type': 'Art'
-                    }, 
+                },
                 'id': 1
             }
         }
@@ -43,7 +44,7 @@ class TriviaTestCase(unittest.TestCase):
             self.db.init_app(self.app)
             # create all tables
             self.db.create_all()
-    
+
     def tearDown(self):
         """Executed after reach test"""
         pass
@@ -55,7 +56,7 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        
+
     # Handle GET requests for all available questions.
     def test_get_all_questions(self):
         res = self.client().get('/api/questions')
@@ -63,7 +64,7 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        
+
     # Handle DELETE request for single question.
     def test_delete_a_question(self):
         res = self.client().delete('/api/questions/11')
@@ -71,7 +72,7 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        
+
     # Handle POST request for single question.
     def test_post_a_question(self):
         res = self.client().post('/api/questions', json=self.new_question)
@@ -79,10 +80,11 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        
+
     # Handle POST request for searching questions.
     def test_search_a_question(self):
-        res = self.client().post('/api/questions/search', json={'searchTerm': 'who'})
+        res = self.client().post('/api/questions/search',
+                                 json={'searchTerm': 'who'})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)

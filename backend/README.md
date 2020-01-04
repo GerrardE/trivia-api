@@ -14,7 +14,7 @@ We recommend working within a virtual environment whenever using Python for proj
 
 #### PIP Dependencies
 
-Once you have your virtual environment setup and running, install dependencies by naviging to the `/backend` directory and running:
+Once you have your virtual environment setup and running, install dependencies by navigating to the `/backend` directory and running:
 
 ```bash
 pip install -r requirements.txt
@@ -23,7 +23,7 @@ pip install -r requirements.txt
 This will install all of the required packages we selected within the `requirements.txt` file.
 
 #### API Docs
-API Documentation can be found [here](./api-docs.json)
+API Documentation can be found [here](./api-docs.json), and more detailed on the web via [postman](https://web.postman.co/collections/7418457-bd7effdb-695a-4135-9e44-1c38eabb299e?version=latest&workspace=8800973c-8443-4606-8e9f-5aec57ae385e)
 
 ##### Key Dependencies
 
@@ -62,5 +62,5 @@ dropdb trivia_test
 createdb trivia_test
 
 python test_flaskr.py
-python test_flaskr2.py
+python test_flaskr_fail.py
 ```
